@@ -19,11 +19,7 @@ st.set_page_config(layout='wide', page_title="Historical financial data", page_i
 
 st.markdown("# Plotting Page")
 st.sidebar.header("Plotting Page")
-st.write(
-    """This page illustrates a combination of plotting and animation with
-Streamlit. We're generating a bunch of random numbers in a loop for around
-5 seconds. Enjoy!"""
-)
+
 
 # @st.cache_data
 def plot_stock_data():
