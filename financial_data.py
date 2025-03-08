@@ -70,7 +70,7 @@ class FinancialData():
         self.chosen_companies=chosen_companies
         self.__api_key = '2c33b88f-d5c5-43cf-9d4e-14cf1bf5e589'
         self.companies, self.prices,  = self.__load_datasets__()
-        self.new_data=self.get_new_prices()
+        self.new_data=None
         self.data=self.get_historical_data()
         self.updateable_data=self.get_historical_data()
         self.__model=self.__predictive_model__()
@@ -118,7 +118,10 @@ class FinancialData():
 
         stream=sf.load_shareprices(market='us',variant='latest');   
 
-        return streamed_preprocessing(self.companies, stream, self.chosen_companies)
+        new=streamed_preprocessing(self.companies, stream, self.chosen_companies)
+
+        self.new_data=new
+        return new
 
     def __predictive_model__(self):
         #Define target and exogenous variables

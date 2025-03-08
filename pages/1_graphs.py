@@ -40,7 +40,7 @@ def plot_stock_data():
     #DESTINATION = st.sidebar.selectbox("Select Destination", destinations)
     tk=COM.filter(pl.col('Company Name')==comps)['Ticker'].to_list()
 
-    print(tk)
+    #print(tk)
     fp=FinancialData(tk, start_date=start_str, end_date=end_str)
     data=fp.get_historical_data()
 
