@@ -50,7 +50,7 @@ def bulk_preprocessing(companies_df:pl.DataFrame, prices_df:pl.DataFrame, chosen
     data.columns=data.columns.str.replace('.','').str.replace(' ','_').str.replace(r'(?<=[a-zA-Z])([A-Z])', r'_\1', regex=True).str.lower()
 
     data['returns']=data['adj_close'].diff()
-    data.dropna(inplace=True)
+    data=data.dropna(subset=['returns'])
 
     return data
 

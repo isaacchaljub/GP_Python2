@@ -27,7 +27,7 @@ Streamlit. We're generating a bunch of random numbers in a loop for around
 
 # @st.cache_data
 def plot_stock_data():
-    comps = st.sidebar.selectbox("Select Company", COM.drop_nulls(subset=['Company Name', 'Ticker'])['Company Name'].to_list())
+    comps = st.sidebar.selectbox("Select Company", COM['Company Name'].to_list())
     #Pri=PRI.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d').cast(pl.Date))
     start= st.sidebar.date_input(label='start date',value=PRI['Date'].min())
     #start= st.sidebar.time_input(label='start date',value=None)

@@ -1,8 +1,7 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-import streamlit as st
-import plotly.express as px
+
 
 from preprocessing import bulk_preprocessing, streamed_preprocessing
 
@@ -30,7 +29,7 @@ COM=pl.read_csv(csv_path_companies, separator=';')
 PRI=pl.read_csv(csv_path_prices, separator=';')
 PRI=PRI.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d').cast(pl.Date))
 
-COM=COM.drop_nans(subset=['Ticker'])
+COM=COM.drop_nulls(subset=['Ticker'])
 
 
 
@@ -179,46 +178,3 @@ class FinancialData():
             self.updateable_data=pd.concat([self.updateable_data,aux])
 
         self.__model=self.__predictive_model__()
-
-
-
-
-
-# @st.cache_data
-def main():
-    comps = st.sidebar.selectbox("Select Company", COM.drop_nulls(subset=['Company Name', 'Ticker'])['Company Name'].to_list())
-    #DESTINATION = st.sidebar.selectbox("Select Destination", destinations)
-    tk=COM.filter(pl.col('Company Name')==comps)['Ticker'].to_list()
-
-    print(tk)
-    fp=FinancialData(tk)
-    data=fp.get_historical_data()
-
-    ## PLOT FIGURE 1 ##
-    fig1 = px.line(
-        data,
-        x=data.index,
-        y="close",
-        title=f"{tk[0]}",
-        template="none",
-    )
-
-    fig1.update_xaxes(title="Date")
-    fig1.update_yaxes(title="Closing Price")
-
-    st.plotly_chart(fig1, use_container_width=True)
-
-
-
-if __name__ == "__main__":
-    # This is to configure some aspects of the app
-    st.set_page_config(
-        layout="wide", page_title="Financial Market Analysis and Prediction Tool", page_icon=":bill:"
-    )
-
-    # Write titles in the main frame and the side bar
-    st.title("Historic Stock Prices")
-    #st.sidebar.title("Select a Company")
-
-    # Call main function
-    main()
