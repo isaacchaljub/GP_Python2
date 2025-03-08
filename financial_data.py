@@ -30,6 +30,8 @@ COM=pl.read_csv(csv_path_companies, separator=';')
 PRI=pl.read_csv(csv_path_prices, separator=';')
 PRI=PRI.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d').cast(pl.Date))
 
+COM=COM.drop_nans(subset=['Ticker'])
+
 
 
 
