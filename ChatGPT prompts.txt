@@ -1,0 +1,17 @@
+1.
+
+I have a class with function defined in financials.py and I'm building a streamlit app to display information on different pages.
+
+The structure is as follows:
+
+GP2
+|-financials.py
+|-pages
+       |-plot.py
+
+I'm trying to call financials.py in plot.py using import financials, but it's not recognizing it
+
+
+2.
+My Date column on PRI was a string of dates: '2019-04-11'. I called Pri=PRI.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d')) but it's giving it back to me with hours, which I don't want. How can I enforce to have only dates?
+
