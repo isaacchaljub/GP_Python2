@@ -17,7 +17,7 @@ from financial_data import COM, PRI, FinancialData
 
 st.set_page_config(layout='wide', page_title="Historical financial data", page_icon="📈")
 
-#st.markdown("# Plotting Page")
+st.markdown("# Plotting Page")
 st.sidebar.header("Plotting Page")
 st.write(
     """This page illustrates a combination of plotting and animation with
