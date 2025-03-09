@@ -54,7 +54,7 @@ def retrieve_stock_data():
     #col1, col2, col3 = st.columns([1, 2, 1])  # Middle column (col2) will contain the text and DataFrame
 
     with st.container():
-        st.markdown('<p class="centered-text">📊 Your Data Overview</p>', unsafe_allow_html=True)
+        #st.markdown('<p class="centered-text">📊 Your Data Overview</p>', unsafe_allow_html=True)
         st.dataframe(new_data, use_container_width=True)  # Displays DataFrame in a centered column
         #st.table(new_data)
 
