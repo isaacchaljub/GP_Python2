@@ -109,13 +109,13 @@ class FinancialData():
             start_price=data['close'].loc[start_date]
             end_price=data['close'].loc[end_date]
 
-            pl=np.round((end_price-start_price)/start_price,2)*100
+            pl=np.round(100*(end_price-start_price)/start_price,2)
             ret=np.round(end_price-start_price,2)
 
             if pl>0:
-                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you would have made ${ret}, a profit of {pl}%"
+                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you would have made ${ret:.2f}, a profit of {pl:.2f}%"
             elif pl<0:
-                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you would have lost ${ret}, a loss of {pl}%"
+                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you would have lost ${ret:.2f}, a loss of {pl:.2f}%"
             else:
                 return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you wouldn't have any profit or loss"
                 
