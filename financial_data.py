@@ -11,6 +11,9 @@ from xgboost import XGBRegressor
 
 import simfin as sf
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from time import sleep
 import re
 
@@ -61,7 +64,7 @@ class FinancialData():
         self.start_date=pd.to_datetime(start_date, format='%Y-%m-%d')       
         self.end_date=pd.to_datetime(end_date,format='%Y-%m-%d')
         self.chosen_companies=chosen_companies
-        self.__api_key = '2c33b88f-d5c5-43cf-9d4e-14cf1bf5e589'
+        self.__api_key = os.getenv('api_key')
         self.companies, self.prices,  = self.__load_datasets__()
         self.new_data=None
         self.data=self.get_historical_data()
