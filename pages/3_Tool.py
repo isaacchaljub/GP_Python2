@@ -12,21 +12,18 @@ from financial_data import COM, FinancialData
 
 ###########################################################
 
-st.set_page_config(layout='wide', page_title="Most recent financial data", page_icon="📈")
+st.set_page_config(layout='wide', page_title="Trading Tool", page_icon="🔮")
 
-st.markdown("# Latest stock information")
-st.sidebar.header("Latest stock information Page")
+st.markdown("# Try our trading tool for the stock you want")
+st.sidebar.header("Algorithmic trading tool")
 
-def retrieve_stock_data():
+def operate_trading_tool():
     comps = st.sidebar.selectbox("Select Company", COM['Company Name'].to_list())
     tk=COM.filter(pl.col('Company Name')==comps)['Ticker'].to_list()
 
     fp=FinancialData(tk)
 
-    new_data=fp.get_new_prices()
-
-    # Set page layout
-    #st.set_page_config(page_title="Centered Text & DataFrame", layout="wide")
+    investing=fp.investing_strategy()
 
     # Custom CSS for centering
     st.markdown(
@@ -48,13 +45,13 @@ def retrieve_stock_data():
     )
 
     # Centering using st.columns()
-    #col1, col2, col3 = st.columns([1, 2, 1])  # Middle column (col2) will contain the text and DataFrame
+    # col1, col2, col3 = st.columns([1, 2, 1])  # Middle column (col2) will contain the text and DataFrame
 
     with st.container():
         #st.markdown('<p class="centered-text">📊 Your Data Overview</p>', unsafe_allow_html=True)
-        st.dataframe(new_data, use_container_width=True)  # Displays DataFrame in a centered column
+        st.write(investing)#, use_container_width=True)  # Displays DataFrame in a centered column
         #st.table(new_data)
 
 
 if __name__ == "__main__":
-    retrieve_stock_data()
+    operate_trading_tool()

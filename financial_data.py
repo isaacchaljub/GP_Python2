@@ -35,7 +35,7 @@ COM=COM.drop_nulls(subset=['Ticker'])
 
 
 class FinancialData():
-    def __init__(self, chosen_companies:list=None, start_date:str=PRI['Date'].min(), end_date:str=PRI['Date'].max()):
+    def __init__(self, chosen_companies:list=None, start_date:str=str(PRI['Date'].min()), end_date:str=str(PRI['Date'].max())):
         '''
         chosen_companies : List of the companies the analysis will be performed on.
 
@@ -47,27 +47,19 @@ class FinancialData():
         
         date_format=re.compile(r'^\d{4}-\d{2}-\d{2}$')
         
-        if start_date is not None:
-            if not date_format.match(start_date):
-                print("The start_date parameter must be a string passed in the format '%Y-%m-%d'")
+
+        if not date_format.match(start_date):
+            print("The start_date parameter must be a string passed in the format '%Y-%m-%d'")
         
-        if end_date is not None:
-            if not date_format.match(end_date):
-                print("The end_date parameter must be a string passed in the format '%Y-%m-%d'")
+        if not date_format.match(end_date):
+            print("The end_date parameter must be a string passed in the format '%Y-%m-%d'")
 
         if len(chosen_companies)==0:
             print("The chosen companies' list cannot be empty")
         
-        if start_date is None:
-            self.start_date=None
-        else:
-            self.start_date=pd.to_datetime(start_date)
-            
-        if end_date is None:
-            self.end_date=None
-        else:
-            self.end_date=pd.to_datetime(end_date)
-
+        
+        self.start_date=pd.to_datetime(start_date, format='%Y-%m-%d')       
+        self.end_date=pd.to_datetime(end_date,format='%Y-%m-%d')
         self.chosen_companies=chosen_companies
         self.__api_key = '2c33b88f-d5c5-43cf-9d4e-14cf1bf5e589'
         self.companies, self.prices,  = self.__load_datasets__()
@@ -84,11 +76,11 @@ class FinancialData():
 
         #prices=prices.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d').cast(pl.Date))
 
-        if self.start_date is None and self.end_date is None: #If no start or end date are specified
+        if self.start_date==PRI['Date'].min() and self.end_date==PRI['Date'].max(): #If no start or end date are specified
             prices=prices
-        elif self.start_date is None and self.end_date is not None: #If no start date is specified
+        elif self.start_date==PRI['Date'].min() and self.end_date!=PRI['Date'].max(): #If no start date is specified
             prices=prices.filter(pl.col('Date')<=self.end_date)
-        elif self.start_date is not None and self.end_date is None: #If no end date is specified
+        elif self.start_date!=PRI['Date'].min() and self.end_date==PRI['Date'].max(): #If no end date is specified
             prices=prices.filter(pl.col('Date')>=self.start_date)
         else: #If both dates are specified
             prices=prices.filter((pl.col('Date')>=self.start_date)&(pl.col('Date')<=self.end_date))
@@ -103,6 +95,30 @@ class FinancialData():
         Dataframe with consolidated and preprocessed historical information
         '''
         return bulk_preprocessing(self.companies, self.prices, self.chosen_companies)
+    
+    def get_pl_sim(self):
+
+        for stock in self.chosen_companies:
+            data=self.data[self.data['ticker']==stock]
+            start_date = data.index[0] #.strftime('%Y-%m-%d')
+            end_date = data.index[-1] #.strftime('%Y-%m-%d')
+
+            start_price=data['close'].loc[start_date]
+            end_price=data['close'].loc[end_date]
+
+            pl=np.round((end_price-start_price)/start_price,2)*100
+            ret=np.round(end_price-start_price,2)
+
+            if pl>0:
+                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you would have made ${ret}, a profit of {pl}%"
+            elif pl<0:
+                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you would have lost ${ret}, a loss of {pl}%"
+            else:
+                return f"If you had bought one stock from {stock} at {self.start_date.date()} and sold at {self.end_date.date()}, you wouldn't have any profit or loss"
+                
+
+
+
     
     def get_new_prices(self):
         '''
@@ -148,6 +164,7 @@ class FinancialData():
     def investing_strategy(self):
 
         stocks=self.chosen_companies
+        self.get_new_prices()
     
         for stock in stocks:
         
@@ -157,11 +174,14 @@ class FinancialData():
             rang=rel.max()-rel.min()
 
             if pred>0.2*rang:
-                print(f'According to our model, the return tomorrow for {stock} will be greatly positive, you should buy')
+                #print(f'According to our model, the return tomorrow for {stock} will be greatly positive, you should buy')
+                return f'According to our model, the return tomorrow for {stock} will be greatly positive, you should buy'
             elif pred <-0.2*rang:
-                print(f"According to our model, the return tomorrow for {stock} will be highly negative, you should sell")
+                #print(f"According to our model, the return tomorrow for {stock} will be highly negative, you should sell")
+                return f"According to our model, the return tomorrow for {stock} will be highly negative, you should sell"
             else:
-                print(f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold")
+                #print(f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold")
+                return f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold"
         
         self.__continuous_training__()
 

@@ -21,3 +21,9 @@ https://docs.streamlit.io/get-started/tutorials/create-a-multipage-app
 According to these instructions, what's missing from my scripts so that 1_graphs.py appears as part of Hello.py and a multi-page structure?
 
 4.
+How can I display a text and a numerical value in streamlit so that they're in the center of the page, and are stylized?
+
+5.
+How can I include a checkbox in streamlit, such that if it's checked I perform a function and if it's not the function ceases to execute?
+
+6.
