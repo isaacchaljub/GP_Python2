@@ -201,3 +201,8 @@ class FinancialData():
             self.updateable_data=pd.concat([self.updateable_data,aux])
 
         self.__model=self.__predictive_model__()
+
+
+# if __name__=='main':
+#     fp=FinancialData(COM['Company Name'])
+#     fp.get_new_prices()
