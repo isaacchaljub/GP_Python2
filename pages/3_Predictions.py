@@ -17,6 +17,17 @@ st.set_page_config(layout='wide', page_title="Predicted financial data", page_ic
 #st.markdown("# Plotting Page")
 st.sidebar.header("Predictions Page")
 
+st.markdown(
+    """
+    This page lets you see how our Machine Learning model works behind the scenes. We're using a Gradient Boosting Regression
+    that uses information on opening, high, low, and closing prices, plus dates, to predict the return a stock will have.
+
+    We preferred using a regression in order to give you a better feel on possible scenarios you might face other than just go
+    up or down, at the expense of having a higher uncertainty. Please use with discretion.
+
+    Finally, we're printing some metrics so you yourself can judge the quality of the model. Have fun with it!
+"""
+)
 
 # @st.cache_data
 def plot_predicted_data():

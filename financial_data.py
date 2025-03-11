@@ -214,6 +214,7 @@ class FinancialData():
         for stock in stocks:
         
             pred=self.predict_new_return(self.new_data[self.new_data['ticker']==stock])
+            self.__continuous_training__()
             historical_data=self.get_historical_data()
             rel=historical_data[historical_data['ticker']==stock]['returns']
             rang=rel.max()-rel.min()
@@ -228,7 +229,7 @@ class FinancialData():
                 #print(f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold")
                 return f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold"
         
-        self.__continuous_training__()
+        
 
     def __continuous_training__(self):
         '''
