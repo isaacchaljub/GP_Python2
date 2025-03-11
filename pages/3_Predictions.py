@@ -2,6 +2,9 @@ import polars as pl
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.metrics import root_mean_squared_error as rmse
+import numpy as np
+import pandas as pd
 
 import sys
 import os
@@ -38,10 +41,12 @@ def plot_predicted_data():
     min_date=PRI.filter(pl.col('Ticker').is_in(tk))['Date'].min()
     max_date=PRI.filter(pl.col('Ticker').is_in(tk))['Date'].max()
 
-    start= st.sidebar.date_input(label='start date', key='start_date')
+    start= st.sidebar.date_input(label='start date', key='start_date',
+                                 value=(min_date+pd.Timedelta(days=180)))
     #start= st.sidebar.time_input(label='start date',value=None)
 
-    end= st.sidebar.date_input(label='start date', key='end_date')
+    end= st.sidebar.date_input(label='start date', key='end_date',
+                               value=(min_date+pd.Timedelta(days=210)))
     #end= st.sidebar.time_input(label='end date',value=None)
 
     start_str = start.strftime('%Y-%m-%d')
@@ -86,6 +91,8 @@ def plot_predicted_data():
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+    st.metric(label='RMSE Score for the predictions', value=np.round(rmse(data,preds),2))
 
 
 if __name__ == "__main__":
