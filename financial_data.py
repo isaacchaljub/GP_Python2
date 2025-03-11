@@ -52,43 +52,53 @@ class FinancialData():
         
 
         if not date_format.match(start_date):
-            print("The start_date parameter must be a string passed in the format '%Y-%m-%d'")
+            raise ValueError("The start_date parameter must be a string passed in the format '%Y-%m-%d'")
         
         if not date_format.match(end_date):
-            print("The end_date parameter must be a string passed in the format '%Y-%m-%d'")
+            raise ValueError("The end_date parameter must be a string passed in the format '%Y-%m-%d'")
 
         if len(chosen_companies)==0:
-            print("The chosen companies' list cannot be empty")
+            raise ValueError("The chosen companies' list cannot be empty")
         
-        
-        self.start_date=pd.to_datetime(start_date, format='%Y-%m-%d')       
-        self.end_date=pd.to_datetime(end_date,format='%Y-%m-%d')
-        self.chosen_companies=chosen_companies
-        self.__api_key = os.getenv('api_key')
-        self.companies, self.prices,  = self.__load_datasets__()
-        self.new_data=None
-        self.data=self.get_historical_data()
-        self.updateable_data=self.get_historical_data()
-        self.__model=self.__predictive_model__()
-    
+        try:
+            self.start_date=pd.to_datetime(start_date, format='%Y-%m-%d')       
+            self.end_date=pd.to_datetime(end_date,format='%Y-%m-%d')
+
+            if self.end_date < self.start_date:
+                raise ValueError('end_date can not be earlier than start date')
+
+            self.chosen_companies=chosen_companies
+            self.__api_key = os.getenv('api_key')
+            self.companies, self.prices,  = self.__load_datasets__()
+            self.new_data=None
+            self.data=self.get_historical_data()
+            self.updateable_data=self.get_historical_data()
+            self.__model=self.__predictive_model__()
+
+        except Exception as e:
+            print(f'There was an error on the initiation: {e}')
     
 
     def __load_datasets__(self):
-        companies=COM
-        prices=PRI
+        try:
+            companies=COM
+            prices=PRI
 
-        #prices=prices.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d').cast(pl.Date))
+            #prices=prices.with_columns(pl.col('Date').str.to_datetime('%Y-%m-%d').cast(pl.Date))
 
-        if self.start_date==PRI['Date'].min() and self.end_date==PRI['Date'].max(): #If no start or end date are specified
-            prices=prices
-        elif self.start_date==PRI['Date'].min() and self.end_date!=PRI['Date'].max(): #If no start date is specified
-            prices=prices.filter(pl.col('Date')<=self.end_date)
-        elif self.start_date!=PRI['Date'].min() and self.end_date==PRI['Date'].max(): #If no end date is specified
-            prices=prices.filter(pl.col('Date')>=self.start_date)
-        else: #If both dates are specified
-            prices=prices.filter((pl.col('Date')>=self.start_date)&(pl.col('Date')<=self.end_date))
+            if self.start_date==PRI['Date'].min() and self.end_date==PRI['Date'].max(): #If no start or end date are specified
+                prices=prices
+            elif self.start_date==PRI['Date'].min() and self.end_date!=PRI['Date'].max(): #If no start date is specified
+                prices=prices.filter(pl.col('Date')<=self.end_date)
+            elif self.start_date!=PRI['Date'].min() and self.end_date==PRI['Date'].max(): #If no end date is specified
+                prices=prices.filter(pl.col('Date')>=self.start_date)
+            else: #If both dates are specified
+                prices=prices.filter((pl.col('Date')>=self.start_date)&(pl.col('Date')<=self.end_date))
 
-        return companies, prices
+            return companies, prices
+        
+        except Exception as e:
+            print(f'Error Loading datasets:{e}')
     
     
     def get_historical_data(self):
@@ -143,9 +153,15 @@ class FinancialData():
         self.new_data=new
         return new
 
-    def __predictive_model__(self):
+    def __predictive_model__(self,start_date=None, end_date=None):
+        
+        if start_date is None:
+            start_date=self.start_date
+        
+        if end_date is None:
+            end_date=self.end_date
         #Define target and exogenous variables
-        data=self.updateable_data
+        data=self.updateable_data.loc[start_date:end_date]
         #df=data[data['ticker']==stock]
         x=data.drop('returns', axis=1)
         y=data['returns']
@@ -163,6 +179,32 @@ class FinancialData():
         #self.__continuous_training__()
 
         return preds
+    
+    def predictions(self, start_date:str, end_date:str):
+        
+        try:        
+            start=pd.to_datetime(start_date)
+            end=pd.to_datetime(end_date)
+            steps=(end-start).days
+
+            passed_data=self.data.loc[start:end]
+            passed_returns=passed_data['returns']
+            passed_data=passed_data.drop('returns', axis=1)
+            
+
+            model=self.__predictive_model__(self.start_date, start)
+
+            preds=pd.DataFrame(data=model.predict(passed_data),index=passed_data.index,columns=['returns'])
+            passed_returns=pd.DataFrame(data=passed_returns, index=passed_data.index, columns=['returns'])
+
+            return passed_returns, preds
+        
+        except Exception as e:
+            print(f'Error when predicting various returns: {e}')
+
+
+
+
     
     def investing_strategy(self):
 
