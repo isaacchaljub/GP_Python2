@@ -15,6 +15,9 @@ from financial_data import COM, FinancialData
 st.set_page_config(layout='wide', page_title="Trading Tool", page_icon="🔮")
 
 st.markdown("# Try our trading tool for the stock you want")
+st.write('''Currently we only support one-day forecasting given the constraints on Gradient Boosting Regression.
+We advise you to use this forecast with caution, predicting stock returns is highly complicated and depends on
+qualitative information not considered by the model''')
 st.sidebar.header("Algorithmic trading tool")
 
 def operate_trading_tool():

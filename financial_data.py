@@ -219,15 +219,15 @@ class FinancialData():
             rel=historical_data[historical_data['ticker']==stock]['returns']
             rang=rel.max()-rel.min()
 
-            if pred>0.2*rang:
+            if pred>0.02*rang:
                 #print(f'According to our model, the return tomorrow for {stock} will be greatly positive, you should buy')
                 return f'According to our model, the return tomorrow for {stock} will be greatly positive, you should buy'
-            elif pred <-0.2*rang:
+            elif pred <-0.05*rang:
                 #print(f"According to our model, the return tomorrow for {stock} will be highly negative, you should sell")
                 return f"According to our model, the return tomorrow for {stock} will be highly negative, you should sell"
             else:
                 #print(f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold")
-                return f"According to our model, the return tomorrow for {stock} won't surpass 20% change in any direction, you should hold"
+                return f"According to our model, the return tomorrow for {stock} won't have a significant change in any direction, you should hold"
         
         
 
